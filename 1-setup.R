@@ -43,10 +43,4 @@ findAssocs(dtm, "data", corlimit=0.6)
 freq <- sort(colSums(as.matrix(dtm)), decreasing=TRUE)
 wf   <- data.frame(word=names(freq), freq=freq)
 
-p <- ggplot(subset(wf, freq>1000), aes(word, freq))
-p <- p + geom_bar(stat="identity")
-p <- p + theme(axis.text.x=element_text(angle=45, hjust=1))
-p
 
-# word cloud
-wordcloud(names(freq), freq, min.freq=1000, colors=brewer.pal(6, "Dark2"))
