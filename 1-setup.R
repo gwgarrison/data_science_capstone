@@ -30,16 +30,18 @@ toSpace <- content_transformer(function(x, pattern) gsub(pattern, " ", x))
 crps <- tm_map(crps, toSpace, "/|@|\\||\\)|\\(")
 crps <- tm_map(crps, content_transformer(tolower))
 # make sure to stem and remove stopwords after other transforms
-crps <- tm_map(crps,stemDocument)
+#crps <- tm_map(crps,stemDocument)
 crps <- tm_map(crps, removeWords, stopwords("english"))
+crps <- tm_map(crps,stripWhitespace)
+
 inspect(crps[100])
 inspect(raw.crps[100])
 
 dtm <- DocumentTermMatrix(crps)
 inspect(dtm[1:5, 1000:1005])
 # Explore the corpus.
-findFreqTerms(dtm, lowfreq=100)
-findAssocs(dtm, "data", corlimit=0.6)
+findFreqTerms(dtm, lowfreq=30)
+findAssocs(dtm, "data", corlimit=0.3)
 freq <- sort(colSums(as.matrix(dtm)), decreasing=TRUE)
 wf   <- data.frame(word=names(freq), freq=freq)
 
