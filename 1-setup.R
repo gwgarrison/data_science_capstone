@@ -31,7 +31,7 @@ crps <- tm_map(crps, toSpace, "/|@|\\||\\)|\\(")
 crps <- tm_map(crps, content_transformer(tolower))
 # make sure to stem and remove stopwords after other transforms
 #crps <- tm_map(crps,stemDocument)
-crps <- tm_map(crps, removeWords, stopwords("english"))
+#crps <- tm_map(crps, removeWords, stopwords("english"))
 crps <- tm_map(crps,stripWhitespace)
 
 inspect(crps[100])

@@ -5,9 +5,11 @@ source("1-setup.R")
 options(mc.cores=1)
 # Trigrams
 #http://stackoverflow.com/questions/19615181/finding-ngrams-in-r-and-comparing-ngrams-across-corpora
-BigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
+BigramTokenizer <- function(x) RWeka::NGramTokenizer(x, RWeka::Weka_control(min = 2, max = 2))
+UnigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
 bdm <- TermDocumentMatrix(crps, control = list(tokenize = BigramTokenizer))
-dm <- removeSparseTerms(bdm, 0.9)
+udm <- TermDocumentMatrix(crps, control = list(tokenize = UnigramTokenizer))
+dm <- removeSparseTerms(bdm, 0.75)
 inspect(dm[1:5,1:5])
 
 TrigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3))
