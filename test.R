@@ -1,8 +1,10 @@
-library(ngram)
 
 options(mc.cores=1)
 
 data("crude")
+dtm <- DocumentTermMatrix(crude)
+dtm <- removeSparseTerms(dtm,.95)
+dim(dtm)
 
 BigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
 bdm <- TermDocumentMatrix(crude, control = list(tokenize = BigramTokenizer))
@@ -15,7 +17,3 @@ tm <- removeSparseTerms(tg,.75)
 
 inspect(dm)
 inspect(tm)
-
-# play with ngram package
-bigram <- ngram(doc,n = 2)
-trigram <- ngram(doc,n = 3)

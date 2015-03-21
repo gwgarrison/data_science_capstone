@@ -3,7 +3,10 @@
 # setup
 library(tm);library(SnowballC);#library(qdap);library(qdapDictionaries);
 library(plyr);library(RColorBrewer);library(ggplot2); library(scales);library(wordcloud)
-library(RWeka);library(slam)
+library(RWeka);library(slam);library(dplyr)
+
+# setting this prevents an error in RWeka package
+options(mc.cores=1)
 
 # get line count for input file
 #tmp <- readChar("en_US.blogs.txt", file.info("en_US.blogs.txt")$size)
@@ -54,15 +57,6 @@ crps <- tm_map(crps,stripWhitespace)
 inspect(crps[100])
 inspect(raw.crps[100])
 
-dtm <- DocumentTermMatrix(crps)
-inspect(dtm[1:5, 1000:1005])
-# Explore the corpus.
-findFreqTerms(dtm, lowfreq=30)
-findAssocs(dtm, "data", corlimit=0.3)
-d <- removeSparseTerms(dtm,.98)
-freq <- sort(colSums(as.matrix(dtm)), decreasing=TRUE)
-dtm.ru <- rollup(dtm, 2, na.rm=TRUE, FUN = sum)
-dtm.df <- as.data.frame(as.matrix(dtm.ru))
-wf   <- data.frame(word=names(freq), freq=freq)
+
 
 

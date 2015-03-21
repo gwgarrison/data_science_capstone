@@ -5,18 +5,43 @@ date: "March 19, 2015"
 output: html_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Preprocessing
+The data for this project was downloaded from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip. The full corpora had the follwing characteristics:
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r,echo=TRUE}
+system("wc  ./final/en_US/* > full_wc.txt")
+full_wc <- read.table("full_wc.txt")
+names(full_wc) <- c("Lines","Words","Bytes","File.Name")
+print(full_wc,row.names = FALSE)
+```
+The wc command returns the number of lines, words, and bytes for each of the three source files. In the output above the the blogs data has 899,288 lines, 37,334,626 words, and 210,159,817 bytes. This is lot of data so for our model building and exploratory analysis we use only sample of this data
 
-```{r}
-summary(cars)
+We created a function to sample to get a sample from each of the three types which included news group, blog, and Twitter data. 
+
+After sampling our data had the following characteristics:
+```{r, echo=TRUE}
+system("wc  ./samples/*")
+system("wc  ./samples/* > sample_wc.txt")
+sample_wc <- read.table("sample_wc.txt")
+names(sample_wc) <- c("Lines","Words","Bytes","File.Name")
+print(sample_wc,row.names = FALSE)
 ```
 
-You can also embed plots, for example:
 
-```{r, echo=FALSE}
-plot(cars)
-```
+## Exploratory Analysis
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Statistical Summaries
+
+
+### Exploratory Plots
+
+
+## Findings
+
+## Plan for Prediction and App Creation
+
+
+## References
+
+All code for this project can be foundt at the following Github Repoistory:
+https://github.com/gwgarrison/data_science_capstone
