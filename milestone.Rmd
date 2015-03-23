@@ -8,6 +8,7 @@ output: html_document
 ## Preprocessing
 The data for this project was downloaded from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip. The full corpora had the follwing characteristics:
 
+Line, word, and byte counts:
 ```{r,echo=TRUE}
 system("wc  ./final/en_US/* > full_wc.txt")
 full_wc <- read.table("full_wc.txt")
@@ -27,6 +28,8 @@ names(sample_wc) <- c("Lines","Words","Bytes","File.Name")
 print(sample_wc,row.names = FALSE)
 ```
 
+# Vocabulary size:
+udm <- TermDocumentMatrix(crps)
 
 ## Exploratory Analysis
 
