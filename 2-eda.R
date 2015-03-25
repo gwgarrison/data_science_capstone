@@ -46,8 +46,9 @@ p
 
 # word cloud
 set.seed(77)
-system.time(wordcloud(names(freq), freq, min.freq=700, colors=brewer.pal(6, "Dark2")))
+system.time(wordcloud(names(freq), freq, min.freq=800, colors=brewer.pal(6, "Dark2")))
 
 # save current work
 system.time(save.image("work_20150323.rda"))
-load("work_20150323.rda")
+system.time(load("work_20150323.rda"))
+

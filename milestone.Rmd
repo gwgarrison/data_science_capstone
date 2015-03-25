@@ -6,7 +6,47 @@ output: html_document
 ---
 
 ## Preprocessing
-The data for this project was downloaded from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip. The full corpora had the follwing characteristics:
+
+The data for this project was downloaded from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip. The folllowing code of conists of preprocessing steps that will facilitate tokenization, exploratory analysis, and future modeling of the text data. Since profanity is such a subjective thing, I used the "Seven Dirty Words" (Wikipedia 2015) from George Carlin. I also added some drevitives of the original seven.
+
+```{r echo=FALSE}
+library(tm);library(SnowballC);#library(qdap);library(qdapDictionaries);
+library(plyr);library(RColorBrewer);library(ggplot2); library(scales);library(wordcloud)
+library(RWeka);library(slam);library(dplyr)
+# setting this prevents an error in RWeka package
+options(mc.cores=1)
+```
+
+```{r}
+blogs <- readLines("samples/blogs.txt")
+news <- readLines("samples/news.txt")
+twitter <- readLines("samples/twitter.txt")
+
+# combine documents and create the corpus
+doc <- c(blogs,news,twitter)
+crps <- Corpus(VectorSource(doc), readerControl = list(language="english"))
+
+# get rid of the numbers and punctuation
+crps <- tm_map(crps,removeNumbers)
+crps <- tm_map(crps,removePunctuation)
+
+# remove profanity
+profanity.df <- read.table("profanity.txt")
+profanity <- as.character(profanity.df[,1])
+crps <- tm_map(crps,removeWords,profanity)
+
+# function to get rid of non standard characters
+toSpace <- content_transformer(function(x, pattern) gsub(pattern, " ", x))
+crps <- tm_map(crps, toSpace, "/|@|\\||\\)|\\(")
+
+# change to all lower case
+crps <- tm_map(crps, content_transformer(tolower))
+
+# remove extra whitespace
+crps <- tm_map(crps,stripWhitespace)
+```
+
+The full corpora had the follwing characteristics:
 
 Line, word, and byte counts:
 ```{r,echo=TRUE}
@@ -28,15 +68,37 @@ names(sample_wc) <- c("Lines","Words","Bytes","File.Name")
 print(sample_wc,row.names = FALSE)
 ```
 
-# Vocabulary size:
-udm <- TermDocumentMatrix(crps)
-
 ## Exploratory Analysis
 
 ### Statistical Summaries
+Vocabulary size of 56,519 terms after sampling
+```{r}
+dtm <- DocumentTermMatrix(crps)
+# remove sparse terms so subsequent matrix conversions to do not error
+d <- removeSparseTerms(dtm,.9999)
+freq <- sort(colSums(as.matrix(d)), decreasing=TRUE)
+wf   <- data.frame(word=names(freq), freq=freq)
+```
+20 most common words in sample corpus:
+```{r}
+head(freq,20)
+```
 
 
 ### Exploratory Plots
+```{r most_frequent,fig.width=8,fig.height=5}
+p <- ggplot(subset(wf, freq>2000), aes(word, freq))
+p <- p + geom_bar(stat="identity",fill = "blue")
+p <- p + theme(axis.text.x=element_text(angle=45, hjust=1)) + coord_flip()
+p
+```
+
+The word cloud below gives a quick visual representation of word frequency:
+```{r wordcloud,fig.width= 7,fig.height= 7}
+# word cloud
+set.seed(777)
+wordcloud(names(freq), freq, min.freq=800,scale = c(4,1), colors=brewer.pal(6, "Dark2"))
+```
 
 
 ## Findings
@@ -45,6 +107,8 @@ udm <- TermDocumentMatrix(crps)
 
 
 ## References
+
+Wikipedia (2015). Seven dirty words. URL http://en.wikipedia.org/wiki/Seven_dirty_words.
 
 All code for this project can be foundt at the following Github Repoistory:
 https://github.com/gwgarrison/data_science_capstone
