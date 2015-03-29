@@ -7,7 +7,7 @@ output: html_document
 
 ## Preprocessing
 
-The data for this project was downloaded from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip. The folllowing code of conists of preprocessing steps that will facilitate tokenization, exploratory analysis, and future modeling of the text data. Since profanity is such a subjective thing, I used the "Seven Dirty Words" (Wikipedia 2015) from George Carlin. I also added some drevitives of the original seven.
+The data for this project was downloaded from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip. The following code of consists of preprocessing steps that will facilitate tokenization, exploratory analysis, and future modeling of the text data. Since profanity is such a subjective thing, I used the "Seven Dirty Words" (Wikipedia 2015) from George Carlin. I also added some derivatives of the original seven.
 
 ```{r echo=FALSE}
 library(tm);library(SnowballC);#library(qdap);library(qdapDictionaries);
@@ -78,6 +78,29 @@ dtm <- DocumentTermMatrix(crps)
 d <- removeSparseTerms(dtm,.9999)
 freq <- sort(colSums(as.matrix(d)), decreasing=TRUE)
 wf   <- data.frame(word=names(freq), freq=freq)
+BigramTokenizer <- function(x) RWeka::NGramTokenizer(x, RWeka::Weka_control(min = 2, max = 2))
+TrigramTokenizer <- function(x) RWeka::NGramTokenizer(x, RWeka::Weka_control(min = 3, max = 3))
+bdm <- TermDocumentMatrix(crps, control = list(tokenize = BigramTokenizer))
+tdm <- TermDocumentMatrix(crps, control = list(tokenize = TrigramTokenizer))
+udm <- TermDocumentMatrix(crps)
+dm <- removeSparseTerms(bdm, 0.9999)
+tm <- removeSparseTerms(tdm, 0.9999)
+um <- removeSparseTerms(udm, 0.9999)
+tm <- as.matrix(tm)
+dm <- as.matrix(dm)
+um <- as.matrix(um)
+b.freq <- as.data.frame(rowSums(dm))
+t.freq <- as.data.frame(rowSums(tm))
+u.freq <- as.data.frame(rowSums(um))
+b.freq$bigram <- row.names(b.freq)
+t.freq$trigram <- row.names(t.freq)
+u.freq$unigram <- row.names(u.freq)
+uni.freq <- tbl_df(data.frame(u.freq[,2],u.freq[,1]))
+bi.freq <- tbl_df(data.frame(b.freq[,2],b.freq[,1]))
+tri.freq <- tbl_df(data.frame(t.freq[,2],t.freq[,1]))
+names(bi.freq) <- c("bigram","count")
+names(tri.freq) <- c("trigram","count")
+names(uni.freq) <- c("unigram","count")
 ```
 20 most common words in sample corpus:
 ```{r}
@@ -86,29 +109,50 @@ head(freq,20)
 
 
 ### Exploratory Plots
+Bar plot of most common words. The axis is flipped and reordered by the count (Zumel 2014)
 ```{r most_frequent,fig.width=8,fig.height=5}
-p <- ggplot(subset(wf, freq>2000), aes(word, freq))
+wf.ordered <- transform(wf,word = reorder(word,freq))
+p <- ggplot(subset(wf.ordered, freq>2000), aes(word, freq))
 p <- p + geom_bar(stat="identity",fill = "blue")
-p <- p + theme(axis.text.x=element_text(angle=45, hjust=1)) + coord_flip()
+p <- p + theme(axis.text.x=element_text(angle=45, hjust=1)) + coord_flip() +
+  xlab("Words") + ylab("Count") + ggtitle("Unigram/Word Count for Sample Corpus")
 p
 ```
 
+Bar plot of most common bigrams. 
+```{r most_frequent_bigrams,fig.width=8,fig.height=5}
+bf.ordered <- transform(bi.freq,bigram = reorder(bigram ,count))
+p <- ggplot(subset(bf.ordered, count>800), aes(bigram, count))
+p <- p + geom_bar(stat="identity",fill = "red")
+p <- p + theme(axis.text.x=element_text(angle=45, hjust=1)) + coord_flip() +
+  xlab("Bigrams") + ylab("Count") + ggtitle("Bigram Count for Sample Corpus")
+p
+```
+
+
 The word cloud below gives a quick visual representation of word frequency:
-```{r wordcloud,fig.width= 7,fig.height= 7}
+```{r wordcloud,fig.width= 7,fig.height= 7,fig.align='center',fig.cap="Word Cloud of Most Frequent Words"}
 # word cloud
 set.seed(777)
-wordcloud(names(freq), freq, min.freq=800,scale = c(4,1), colors=brewer.pal(6, "Dark2"))
+wordcloud(names(freq), freq, min.freq=900,scale = c(4,1), colors=brewer.pal(6, "Dark2"),
+          main = "Most Frequently Used Words in Sample Corpus")
 ```
 
 
 ## Findings
+We can see from the word frequencies and bigram frequencies that "stop" words dominate the corpus as one would expect. For some text processing tasks these words are removed, but for our next word prediction we will leave them in place at least for our initial modeling.
+
 
 ## Plan for Prediction and App Creation
-
+My plan is to create a simple ngram model for next word prediction. At this point I plan to use trigrams and backoff to bigram or unigram models if the trigram does not result in a good prediction. If accuracy is poor, I will investigate more sophisticated actions such as interpolation and smoothing algorithms such as Good-Turing or Kneser-Ney. (Jurafsky 2015)
 
 ## References
 
 Wikipedia (2015). Seven dirty words. URL http://en.wikipedia.org/wiki/Seven_dirty_words.
 
-All code for this project can be foundt at the following Github Repoistory:
+Zumel,Nina. Mount, John. (2014). Practical Data Science with R (Kindle Location 1262). Manning Publications. Kindle Edition. 
+
+Jurafsky, Dan. Manning, Christopher. (2014). Natural Language Processing (Coursera). URL https://class.coursera.org/nlp/lecture/preview
+ 
+All code for this project can be found at the following Github Repoistory:
 https://github.com/gwgarrison/data_science_capstone
