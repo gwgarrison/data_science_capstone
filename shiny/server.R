@@ -1,4 +1,4 @@
-
+load("freq.rda")
 
 shinyServer(function(input, output) {
   
