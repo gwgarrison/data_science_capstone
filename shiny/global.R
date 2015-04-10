@@ -36,7 +36,7 @@ predict_next_word <- function(words, number_of_preds = 3){
     wf <- filter(quad.freq,grepl(paste('^',words,' ',sep=''),quadgram))
     wf <- arrange(wf,desc(count))[1,]
     
-  }
+  } 
 
 #print(wf)  
 #print(words)
@@ -49,9 +49,8 @@ if ( is.na(w[1]) ){
   
   w <- arrange(uni.freq,desc(count))[1,]
   w <- as.character(w$unigram)
-}
-
-#print(w)
+} 
+#print(words,row.names= FALSE)
 w
   
 }

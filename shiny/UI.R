@@ -6,6 +6,7 @@ shinyUI(fluidPage(
   #br(),
   #actionButton("action",label="Predict Text"),
   hr(),
+  h3("Prediction"),
   fluidRow(column(5, verbatimTextOutput("value")))
   
 ))
