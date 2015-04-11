@@ -49,8 +49,17 @@ if ( is.na(w[1]) ){
   
   w <- arrange(uni.freq,desc(count))[1,]
   w <- as.character(w$unigram)
+  #print()
 } 
 #print(words,row.names= FALSE)
+print(length(words))
 w
+  
+}
+
+call_predict <- function(words){
+  
+  w <- predict_next_word(words)
+  w
   
 }
