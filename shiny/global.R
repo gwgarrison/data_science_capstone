@@ -52,14 +52,18 @@ if ( is.na(w[1]) ){
   #print()
 } 
 #print(words,row.names= FALSE)
-print(length(words))
 w
   
 }
 
 call_predict <- function(words){
   
-  w <- predict_next_word(words)
+  w <- ''
+  if (nchar(words) > 0) {
+     w <- predict_next_word(words)
+  }  else {
+    w <- ''
+  }
   w
   
 }
