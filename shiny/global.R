@@ -3,7 +3,7 @@ library(dplyr)
 
 load("freq.rda")
 predict_next_word <- function(words, number_of_preds = 3){
-  
+  #words <- 'when it comes'  
   words <- stri_extract_all_words(words)
   words.size <- length(words[[1]])
   
@@ -23,20 +23,20 @@ predict_next_word <- function(words, number_of_preds = 3){
     wf <- filter(tri.freq,grepl(paste('^',words,' ',sep=''),trigram))
     wf <- arrange(wf,desc(count))[1,]
     
-  } else if (words.size == 3) {
+  } else if (words.size >= 3) {
     
-    # only take the last two words in the string
-    words <- paste(words[[1]][words.size-1],words[[1]][words.size])
+    # for 3 words and higher use the quad gram to predict the next word
+    words <- paste(words[[1]][words.size-2],words[[1]][words.size-1],words[[1]][words.size])
     wf <- filter(quad.freq,grepl(paste('^',words,' ',sep=''),quadgram))
     wf <- arrange(wf,desc(count))[1,]
   
-  } else if (words.size > 3 ){
+  } #else if (words.size > 3 ){
     
-    words <- paste(words[[1]][words.size-1],words[[1]][words.size])
-    wf <- filter(quad.freq,grepl(paste('^',words,' ',sep=''),quadgram))
-    wf <- arrange(wf,desc(count))[1,]
+#    words <- paste(words[[1]][words.size-1],words[[1]][words.size])
+#    wf <- filter(quad.freq,grepl(paste('^',words,' ',sep=''),quadgram))
+#    wf <- arrange(wf,desc(count))[1,]
     
-  } 
+#  } 
 
 #print(wf)  
 #print(words)
@@ -62,7 +62,7 @@ call_predict <- function(words){
   if (nchar(words) > 0) {
      w <- predict_next_word(words)
   }  else {
-    w <- ''
+    w <- '<Please type some input to get a word prediction>'
   }
   w
   
