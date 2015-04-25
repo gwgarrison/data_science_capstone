@@ -1,29 +1,41 @@
 ---
 title: "Data Science Capstone"
 author: "Gary Garrison"
-date: "April 5, 2015"
+date: "April 22, 2015"
 output: slidy_presentation
 ---
 
 ## Next Word Predictor
 
-The Next Word Predictor (NWP) uses n-gram to make a prediction for the next word to complete the input phrase. The NWP uses a sample of unigrams, bigrams, trigrams, and 
+The Next Word Predictor (NWP) uses n-gram to make a prediction for the next word to complete the input phrase. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
 
-## Slide with Bullets
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+## How does the NWP Work?
 
-## Slide with R Code and Output
 
-```{r}
-summary(cars)
-```
+* The NWP uses unigrams, bigrams, trigrams, and quadgram frequencies to determine the probablitiy and predict the probability of the next word. 
+* The n-gram frequencies were extracted from a sample corpus of Internet documents including blogs, Twitter documents, and news documents.
+* If the NWP cannot predict the next word it will "back-off" and try a smaller ngram. 
+    + If the NWP is using a trigram to predict two words and fails it will back-off and try with a unigram on the last word.
+    + This backoff feature increases the accuracy with very little impact to performance.
+
+## Characteristics of the NWP
+
+### Pros
+* Simple
+* Small
+* Fast
+
+### Cons
+* Not the greatest accuracy
+
+### Synopsis:
+The NWP is quite fast. Word predictions are basically real-time. This speed is the result of the relatively small size of the frequency data sets and simplicity of the prediction algorithm.
 
 ## Shiny App for Predicting the Next Word
 
-Here is the location for the next word prediction app. <https://garrisongw.shinyapps.io/new_word_predictor>
+Here is the location for the next word prediction app. <http://garrisongw.shinyapps.io/new_word_predictor>
 
+### Concluding Remarks:
+Predicting the next word turned out to be fairly difficult task. This difficulty was compounded by the fact that I did not have any experience or training with natural language processing. Despite these limitations, I feel that I have learned a lot about NLP and developed a solid word prediction application.
